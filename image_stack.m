@@ -9,7 +9,7 @@ currentfolder=cd;
 cd(folder)
 
 % Get file names
-files=dir([folder 'w_*']);
+files=dir([folder '/w_*']);
 
 % Check number of files to read
 zdim=length(files)-2;
