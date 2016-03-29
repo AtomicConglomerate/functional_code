@@ -14,7 +14,7 @@ parfor i=1:xdim
     for ii=1:ydim
         vec=squeeze(im_stack(i,ii,:));
         [f,fourier]=fast_fourier(vec,5,0);
-        p_im(i,ii)=mean(abs(fourier(abs(f-freq)==min(abs(f-freq)))));
+        p_im(i,ii)=mean(fourier(abs(f-freq)==min(abs(f-freq))));
     end
 end
 toc
