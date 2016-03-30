@@ -59,8 +59,9 @@ handles.f=varargin{3};
 handles.fps=varargin{4};
 
 
-% Set slider frequency range
-set(handles.frequency,'max',size(handles.p_cube,3));
+% Set slider range
+set(handles.frequency,'max',size(handles.im_stack,3));
+set(handles.frequency,'SliderStep', [1/size(handles.im_stack,3) , 10/size(handles.im_stack,3) ]);
 set(handles.frequency,'min',1);
 set(handles.frequency,'value',1);
 guidata(hObject, handles);
@@ -69,12 +70,10 @@ guidata(hObject, handles);
  handles.dcm_obj = datacursormode(hObject);
  set(handles.dcm_obj,'Enable','on','UpdateFcn',{@myupdatefcn,hObject});
 
-% Display power image of first slice
+% Display first slice
 axes(handles.power_image);
-imshow(handles.p_cube(:,:,1)/max(max(handles.p_cube(:,:,1))))
-set(handles.freq_disp, 'FontSize',20);
-set(handles.freq_disp, 'String','0');
-set(handles.toggle, 'String', 'Freq');
+imshow(handles.im_stack(:,:,1))
+set(handles.toggle, 'String', 'Time');
 
 % Choose default command line output for functionalgui
 handles.output = hObject;
@@ -151,27 +150,36 @@ function txt = myupdatefcn(~,event_obj,hFigure)
     
     % Plot time course
     plot(handles.time_course,squeeze(handles.im_stack(pos(2),pos(1),:)));
- 
- elseif hAxesParent==handles.FFT
-    txt=pos(1);
-    freq_ind=find(abs(handles.f-pos(1))==min(abs(handles.f-pos(1))));
-    imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
-    set(handles.freq_disp,'String',num2str(handles.f(freq_ind)));
-    set(handles.frequency,'Value',freq_ind);
-    
+  
  elseif hAxesParent==handles.time_course
     txt=pos(1);
     time_ind=round(pos(1));
     imshow(handles.im_stack(:,:,time_ind),'Parent',handles.power_image)
+    set(handles.frequency,'max',size(handles.im_stack,3));
     set(handles.freq_disp,'String',num2str(time_ind/handles.fps));
     set(handles.frequency,'Value',time_ind);
+    set(handles.toggle,'String','Time');
+    set(handles.units,'String','[s]');
+    
+ elseif hAxesParent==handles.FFT
+    txt=pos(1);
+    freq_ind=find(abs(handles.f-pos(1))==min(abs(handles.f-pos(1))));
+    imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
+    set(handles.frequency,'max',size(handles.p_cube,3));
+    set(handles.freq_disp,'String',num2str(handles.f(freq_ind)));
+    set(handles.frequency,'Value',freq_ind);
+    set(handles.toggle,'String','Freq');
+    set(handles.units,'String','[Hz]');
  
  elseif hAxesParent==handles.FFT_zoom
     txt=pos(1);
     freq_ind=find(abs(handles.f-pos(1))==min(abs(handles.f-pos(1))));
     imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
+    set(handles.frequency,'max',size(handles.p_cube,3));
     set(handles.freq_disp,'String',num2str(handles.f(freq_ind)));
     set(handles.frequency,'Value',freq_ind);
+    set(handles.toggle,'String','Freq');
+    set(handles.units,'String','[Hz]');
     
  end
  
@@ -182,23 +190,28 @@ function toggle_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
-mode=get(handles.toggle, 'String');
+mode=get(handles.toggle,'String');
 
 if mode=='Freq'
     set(handles.toggle,'String','Time');
+    set(handles.units,'String','[s]');
     set(handles.frequency,'max',size(handles.im_stack,3));
     set(handles.frequency,'SliderStep', [1/size(handles.im_stack,3) , 10/size(handles.im_stack,3) ]);
     time_ind=round(get(handles.frequency,'Value'));
     imshow(handles.im_stack(:,:,time_ind),'Parent',handles.power_image)
+    set(handles.freq_disp,'String',num2str(time_ind/handles.fps));
+   
     
 elseif mode=='Time'
     set(handles.toggle,'String','Freq');
+    set(handles.units,'String','[Hz]');
+    freq_ind=round(get(handles.frequency,'Value'));
+    if freq_ind > size(handles.p_cube,3)
+        freq_ind=size(handles.p_cube,3);
+    end
+    set(handles.frequency,'Value',freq_ind);
     set(handles.frequency,'max',size(handles.p_cube,3));
     set(handles.frequency,'SliderStep', [1/size(handles.p_cube,3) , 10/size(handles.p_cube,3) ]);
-    freq_ind=round(get(handles.frequency,'Value'));
     imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
+    set(handles.freq_disp,'String',num2str(handles.f(freq_ind)));
 end
-
-    
-
-% Hint: get(hObject,'Value') returns toggle state of toggle
