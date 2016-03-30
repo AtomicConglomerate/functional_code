@@ -143,35 +143,24 @@ function txt = myupdatefcn(~,event_obj,hFigure)
     txt='';
     % Plot FFT
     plot(handles.FFT,handles.f,squeeze(handles.p_cube(pos(2),pos(1),:)));
-    
-    % Plot FFT zoom
-    plot(handles.FFT_zoom,handles.f,squeeze(handles.p_cube(pos(2),pos(1),:)));
-    xlim(handles.FFT_zoom,[0 0.05]);
+    set(handles.FFT,'xscale','log','xlim',[0 handles.f(end)]);
     
     % Plot time course
-    plot(handles.time_course,squeeze(handles.im_stack(pos(2),pos(1),:)));
+    time_vec=0:1/handles.fps:(size(handles.im_stack,3)-1)/handles.fps;
+    plot(handles.time_course,time_vec,squeeze(handles.im_stack(pos(2),pos(1),:)));
+    set(handles.time_course,'xlim',[0 time_vec(end)]);
   
  elseif hAxesParent==handles.time_course
     txt=pos(1);
-    time_ind=round(pos(1));
+    time_ind=uint16(pos(1)*handles.fps)+1;
     imshow(handles.im_stack(:,:,time_ind),'Parent',handles.power_image)
     set(handles.frequency,'max',size(handles.im_stack,3));
-    set(handles.freq_disp,'String',num2str(time_ind/handles.fps));
+    set(handles.freq_disp,'String',num2str(pos(1)));
     set(handles.frequency,'Value',time_ind);
     set(handles.toggle,'String','Time');
     set(handles.units,'String','[s]');
     
  elseif hAxesParent==handles.FFT
-    txt=pos(1);
-    freq_ind=find(abs(handles.f-pos(1))==min(abs(handles.f-pos(1))));
-    imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
-    set(handles.frequency,'max',size(handles.p_cube,3));
-    set(handles.freq_disp,'String',num2str(handles.f(freq_ind)));
-    set(handles.frequency,'Value',freq_ind);
-    set(handles.toggle,'String','Freq');
-    set(handles.units,'String','[Hz]');
- 
- elseif hAxesParent==handles.FFT_zoom
     txt=pos(1);
     freq_ind=find(abs(handles.f-pos(1))==min(abs(handles.f-pos(1))));
     imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
