@@ -18,7 +18,7 @@ parfor i=1:xdim
     for ii=1:ydim
         vec=squeeze(im_stack(i,ii,:));
         [~,fourier]=fast_fourier(vec,fps,0); 
-        p_cube(i,ii,:)=fourier(1:length(fourier)/2+1);
+        p_cube(i,ii,:)=fourier(1:length(fourier)/2);
     end
 end
 toc
