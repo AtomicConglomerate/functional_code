@@ -29,7 +29,7 @@ wavelengths{1}=files(1).name(3:5);
 % Get all wavelengths used
 for i=1:zdim
     if ~ismember(wavelengths,files(i).name(3:5))
-        wavelengths{size(array,2)+1}=files(i).name(3:5);
+        wavelengths{size(wavelengths,2)+1}=files(i).name(3:5);
     end
 end
 
@@ -55,7 +55,7 @@ end
 
 % Sort numbers associated to files
 for i=1:size(filenum,2)
-    filenum(:,i)=sort(filenum(:,1));
+    filenum(:,i)=sort(filenum(:,i));
 end
 
 % Create preliminary stack
