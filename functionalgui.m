@@ -163,7 +163,7 @@ function txt = myupdatefcn(~,event_obj,hFigure)
  elseif hAxesParent==handles.FFT
     txt=pos(1);
     freq_ind=find(abs(handles.f-pos(1))==min(abs(handles.f-pos(1))));
-    imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image)
+    imshow(handles.p_cube(:,:,freq_ind)/max(max(handles.p_cube(:,:,freq_ind))),'Parent',handles.power_image,'colormap',jet(255));
     set(handles.frequency,'max',size(handles.p_cube,3));
     set(handles.freq_disp,'String',num2str(handles.f(freq_ind)));
     set(handles.frequency,'Value',freq_ind);
